@@ -1,7 +1,7 @@
 <?php
 session_start();
 include_once("../config/init.php");
-if(isset($_POST["regisdter"])){
+if(isset($_POST["register"])){
     $email=$_POST["email"];
     $pass=md5($_POST["pass"]);
     $username=$_POST["username"];
@@ -14,16 +14,26 @@ if(isset($_POST["regisdter"])){
         echo"An account already exist with this email";
     }
     else{
-        $query=$conn->prepare("INSERT INTO user VALUES('',?,?,?,?,?)");
-        $query->execute([$username,$adress,$tel,$email,$pass]);
-        if($query){
-            echo"inserstion avec succés";
+        try{
+            $conn->beginTransaction();
+            $query=$conn->prepare("INSERT INTO user VALUES('',?,?,?,?,?)");
+            $query->execute([$username,$adress,$tel,$email,$pass]);
+            $id_user = $conn->lastInsertId();
+            $query=$conn->query("SELECT id from roles where nom='CLIENT'");
+            $id_role=($query->fetch(PDO::FETCH_ASSOC))["id"];
+            $query=$conn->prepare("INSERT INTO user_roles VALUES (?,?)");
+            $query->execute([$id_user,$id_role]);
+            $conn->commit();
+            $_SESSION["username"]=$username;
+            $_SESSION['id_user']=$id_user;
+            header("Location: ../views/client/list_voitures.php");
         }
-        else{
+        catch(Exception $e){
+            $conn->rollBack();
             echo"error";
         }
+        }
     }
-}
 if(isset($_POST["log_in"])){
     $email=$_POST["email"];
     $pass=md5($_POST["pass"]);
@@ -33,7 +43,20 @@ if(isset($_POST["log_in"])){
         $row=$query->fetch(PDO::FETCH_ASSOC);
         $_SESSION['username']=$row["username"];
         $_SESSION['id_user']=$row["id"];
-        header("Location: ../views/client/list_voitures.php");
+        $roles_query=$conn->prepare("SELECT nom from
+         roles r,user_roles ur,user u 
+         where r.id=ur.id_role and u.id=ur.id_user");
+        $roles_query->execute();
+        $user_roles=[];
+        while($roles=$roles_query->fetch(PDO::FETCH_ASSOC)){
+            $user_roles[]=$roles["nom"];
+        }
+        if(in_array("ADMIN",$user_roles)){
+            header("Location: ../views/admin/adminChose.php");
+        }
+        else{
+            header("Location: ../views/client/list_voitures.php");
+        }
     }
     else{
         header("Location: ../views/auth/login.php");

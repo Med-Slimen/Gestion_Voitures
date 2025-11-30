@@ -7,7 +7,6 @@
     <title>Document</title>
     <link rel="stylesheet" href="../../public/css/style.css">
 </head>
-
 <body>
     <div class="signPage">
         <div class="container">

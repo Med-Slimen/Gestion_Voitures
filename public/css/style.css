@@ -212,7 +212,7 @@ h1,h2,h3,h4,h5,h6{
     border-collapse: collapse;
     margin-top: 15px;
     padding: 30px;
-    width: 1000px;
+    width: 100%;
     max-width: 100%;
 }
 .main .container th{
@@ -307,4 +307,46 @@ a{text-decoration: none;}
     right: 3%;
     font-size: 19px;
     
+}
+
+/*adminChose page*/
+.chose{
+    background-color: #EEEEEE;
+    border-radius: 10px;
+    height: 300px;
+    position: absolute;
+    top: 50%;
+    padding: 10px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.chose .container .box .text{
+    text-align: center;
+}
+.chose .container .box .details{
+    margin: 80px auto;
+    width: 500px;
+    height: fit-content;
+    max-width: 100%;
+}
+.chose .container .box .details .buttons{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: center;
+}
+.chose .container .box .details .buttons a{
+    background-color: #393E46;
+    color: #EEEEEE;
+    width: 100px;
+    height: 50px;
+    font-size: 20px;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+/*Admin form*/
+#adminForm{
+    justify-content: space-between;
 }

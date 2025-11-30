@@ -1,14 +1,14 @@
 <?php 
-include_once("../../config/db.php");
+include_once("../../config/init.php");
 
 $query2=$conn->query("SELECT DISTINCT(marque) from voiture");
-if(isset($_GET["marque_list"])&&$_GET["marque_list"]=="all" && isset($_GET["disp_list"])&&$_GET["disp_list"]=="all" ){
-$query=$conn->query("SELECT * from voiture");
-}
-else if(isset($_GET["search"])){
+if(isset($_GET["search"])){
     $marque=$_GET["marque_list"];
     $disp=$_GET["disp_list"];
-    if($marque=="all"){
+    if($marque=="all" && $disp=="all" ){
+        $query=$conn->query("SELECT * from voiture");
+    }
+    else if($marque=="all"){
         $query=$conn->prepare("SELECT * from voiture where disp=?");
         $query->execute([$disp]);
     }
@@ -21,6 +21,9 @@ else if(isset($_GET["search"])){
         $query->execute([$marque,$disp]);
     }
     
+}
+else{
+    $query=$conn->query("SELECT * from voiture");
 }
 ?>
 <!DOCTYPE html>
@@ -35,14 +38,14 @@ else if(isset($_GET["search"])){
     <div class="navbar">
         <div class="box">
             <div class="text">
-                <h1>Hi User</h1>
+                <h1>Car Reservation</h1>
             </div>
             <div class="details">
                 <div class="p1">
-                    <p>username</p>
+                    <p><?php echo $_SESSION['username']; ?></p>
                 </div>
                 <div class="p2">
-                    <a href="">Log out</a>
+                    <a href="../auth/logout.php">Log out</a>
                 </div>
             </div>
         </div>
@@ -97,6 +100,9 @@ else if(isset($_GET["search"])){
                         ?>
                     </table>
                 </div>
+            </div>
+            <div class="reserver_form">
+
             </div>
         </div>
     </div>

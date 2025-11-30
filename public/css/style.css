@@ -164,7 +164,7 @@ h1,h2,h3,h4,h5,h6{
 }
 .navbar .box .details{
     display: flex;
-    width: 270px;
+    width: 180px;
     font-family: Georgia, 'Times New Roman', Times, serif;
     align-items: center;
     justify-content: space-between;

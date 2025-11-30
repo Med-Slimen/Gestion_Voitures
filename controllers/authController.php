@@ -1,5 +1,6 @@
 <?php
-include_once("../config/db.php");
+session_start();
+include_once("../config/init.php");
 if(isset($_POST["regisdter"])){
     $email=$_POST["email"];
     $pass=md5($_POST["pass"]);
@@ -29,6 +30,8 @@ if(isset($_POST["log_in"])){
     $query=$conn->prepare("SELECT * FROM user where email=? and pass=?");
     $query->execute([$email,$pass]);
     if($query->rowCount()>0){
+        $row=$query->fetch(PDO::FETCH_ASSOC);
+        $_SESSION['username']=$row["username"];
         header("Location: ../views/client/list_voitures.php");
     }
     else{

@@ -32,6 +32,7 @@ if(isset($_POST["log_in"])){
     if($query->rowCount()>0){
         $row=$query->fetch(PDO::FETCH_ASSOC);
         $_SESSION['username']=$row["username"];
+        $_SESSION['id_user']=$row["id"];
         header("Location: ../views/client/list_voitures.php");
     }
     else{

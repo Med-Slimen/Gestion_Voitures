@@ -112,7 +112,7 @@ else{
                                         $date_deb=new DATETIME($disres["date_deb"]);
                                         $date_fin=new DATETIME($disres["date_fin"]);
                                         $days=$date_deb->diff($date_fin);
-                                        echo "Non ( Available in  $days->days days )";
+                                        echo "Non ( Available in  ".$days->days+1 ." days )";
                                     }
                                     else{
                                         echo "Yes";
@@ -138,12 +138,12 @@ else{
                         <p id="immat"></p>
                     </div>
                     <div class="res_form">
-                        <form action="../../controllers/reservationController.php" method="post">
+                        <form action="../../controllers/reservationController.php" onsubmit="return verifDate()" method="post">
                             <label for="">From</label>
                             <input type="hidden" name="id_voiture" id="id_voiture">
-                            <input type="date" name="date_deb" id="date_deb">
+                            <input required type="date" name="date_deb" id="date_deb">
                             <label for="">To</label>
-                            <input type="date" name="date_fin" id="date_fin"><br>
+                            <input required type="date" name="date_fin" id="date_fin"><br>
                             <input type="submit" name="reserver" value="Reserver" id="">
                         </form>
                     </div>

@@ -9,3 +9,12 @@ function showRes(marque,modele,annee,immat,id_voiture){
 function closeResForm(){
     document.getElementById("res_form").style.display="none";
 }
+function verifDate() {
+    let date_deb=new Date(document.getElementById("date_deb").value);
+    let date_fin=new Date(document.getElementById("date_fin").value);
+    if(date_deb>date_fin){
+        alert("Chose a valid date");
+        return false;
+    }
+    return true;
+}

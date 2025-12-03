@@ -93,11 +93,10 @@ else{
                             </select>
                             <input type="submit" name="search" value="Search" id="">
                         </div>
-                        
-                        <div class="addButton">
-                            <button>Add Car</button>
-                        </div>
                     </form>
+                    <div class="addButton">
+                            <button onclick="showAdd()">Add Car</button>
+                        </div>
                     <table border="3">
                         <tr>
                             <th>Marque</th>
@@ -129,23 +128,88 @@ else{
                                     if($row["disp"]==0){
                                         $disquery=$conn->prepare("SELECT * From reservations where id_voiture=?");
                                         $disquery->execute([$row["id"]]);
-                                        $disres=$disquery->fetch(PDO::FETCH_ASSOC);
-                                        $date_deb=new DATETIME($disres["date_deb"]);
-                                        $date_fin=new DATETIME($disres["date_fin"]);
-                                        $days=$date_deb->diff($date_fin);
-                                        echo "Non ( Available in  ".$days->days+1 ." days )";
+                                        if($disquery->rowCount()>0){
+                                            $disres=$disquery->fetch(PDO::FETCH_ASSOC);
+                                            $date_deb=new DATETIME($disres["date_deb"]);
+                                            $date_fin=new DATETIME($disres["date_fin"]);
+                                            $days=$date_deb->diff($date_fin);
+                                            echo "Non ( Available in  ".$days->days+1 ." days )";
+                                        }
+                                        else{
+                                            echo"Non";
+                                        }
                                     }
                                     else{
                                         echo "Yes";
                                     }
                                 ?></td>
                                 <td><button><a onclick="return confirm('Vous etes sur ?');" href="../admin/dashboard.php?id=<?php echo $row["id"] ?>">Supprimer </a></button></td>
-                                <td><button>Modifier</button></td>
+                                <td><button onclick="showModifiy('<?php echo $row['marque']?>','<?php echo $row['modele']?>','<?php echo $row['annee']?>','<?php echo $row['immat']?>','<?php echo $row['id'];?>','<?php echo $row['disp'];?>')">Modifier</button></td>
                             </tr>
                         <?php
                         }
                         ?>
                     </table>
+                </div>
+            </div>
+            <div id="modify_form" class="reserver_form">
+                <div class="text">
+                    <h2>Modify Car</h2>
+                </div>
+                <div class="details">
+                    <div class="res_form">
+                        <form action="../../controllers/crudControllers.php" method="post" onsubmit="return verifRes()">
+                            <input type="hidden" name="id_voiture" id="id_voiture">
+                            <label for="">Marque</label>
+                            <input required type="text" name="marque" id="marque_from"><br>
+                            <label for="">Modele</label>
+                            <input required type="text" name="modele" id="modele_from"><br>
+                            <label for="">Annee</label>
+                            <input required type="text" name="annee" id="annee_from"><br>
+                            <label for="">Immatriculation</label>
+                            <input required type="text" name="immat" id="immat_from"><br>
+                            <input type="hidden" name="old_disp" id="old_disp" readonly id="">
+                            <label for="">Disponibilité</label>
+                            <select name="disp" id="disp_form">
+                                <option value="0">Reservé</option>
+                                <option value="1">Disponible</option>
+                            </select><br>
+                            <input type="submit" name="Modify" value="Modify" id="">
+                        </form>
+                    </div>
+                    <div onclick="closeModifyForm()" class="close">
+                        <i class="fa-solid fa-x"></i>
+                    </div>
+                </div>
+            </div>
+            <div id="add_form" class="reserver_form">
+                <div class="text">
+                    <h2>Add Car</h2>
+                </div>
+                <div class="details">
+                    <div class="res_form">
+                        <form action="../../controllers/crudControllers.php" method="post">
+                            <input type="hidden" name="id_voiture" id="id_voiture">
+                            <label for="">Marque</label>
+                            <input required type="text" name="marque" id="marque_from"><br>
+                            <label for="">Modele</label>
+                            <input required type="text" name="modele" id="modele_from"><br>
+                            <label for="">Annee</label>
+                            <input required type="text" name="annee" id="annee_from"><br>
+                            <label for="">Immatriculation</label>
+                            <input required type="text" name="immat" id="immat_from"><br>
+                            <input type="hidden" name="old_disp" id="old_disp" readonly id="">
+                            <label for="">Disponibilité</label>
+                            <select name="disp" id="disp_form">
+                                <option value="0">Reservé</option>
+                                <option value="1" selected>Disponible</option>
+                            </select><br>
+                            <input type="submit" name="Add" value="Add" id="">
+                        </form>
+                    </div>
+                    <div onclick="closeAddForm()" class="close">
+                        <i class="fa-solid fa-x"></i>
+                    </div>
                 </div>
             </div>
         </div>

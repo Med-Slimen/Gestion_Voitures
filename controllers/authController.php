@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once("../config/init.php");
 if(isset($_POST["register"])){
     $email=$_POST["email"];
@@ -27,6 +26,7 @@ if(isset($_POST["register"])){
             $_SESSION["username"]=$username;
             $_SESSION['id_user']=$id_user;
             header("Location: ../views/client/list_voitures.php");
+            exit();
         }
         catch(Exception $e){
             $conn->rollBack();
@@ -43,23 +43,26 @@ if(isset($_POST["log_in"])){
         $row=$query->fetch(PDO::FETCH_ASSOC);
         $_SESSION['username']=$row["username"];
         $_SESSION['id_user']=$row["id"];
-        $roles_query=$conn->prepare("SELECT nom from
+        $roles_query=$conn->prepare("SELECT DISTINCT(nom) from
          roles r,user_roles ur,user u 
-         where r.id=ur.id_role and u.id=ur.id_user");
-        $roles_query->execute();
+         where ur.id_user=? and u.id=ur.id_user and r.id=ur.id_role");
+        $roles_query->execute([$row["id"]]);
         $user_roles=[];
         while($roles=$roles_query->fetch(PDO::FETCH_ASSOC)){
             $user_roles[]=$roles["nom"];
         }
         if(in_array("ADMIN",$user_roles)){
             header("Location: ../views/admin/adminChose.php");
+            exit();
         }
         else{
             header("Location: ../views/client/list_voitures.php");
+            exit();
         }
     }
     else{
         header("Location: ../views/auth/login.php");
+        exit();
     }
 }
 

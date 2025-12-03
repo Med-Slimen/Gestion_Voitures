@@ -31,7 +31,9 @@ function closeAddForm(){
 function verifDate() {
     let date_deb=new Date(document.getElementById("date_deb").value);
     let date_fin=new Date(document.getElementById("date_fin").value);
-    if(date_deb>date_fin){
+    let currenDate=new Date();
+    currenDate.setHours(0, 0, 0, 0);
+    if(date_deb<currenDate || date_deb>date_fin){
         alert("Chose a valid date");
         return false;
     }

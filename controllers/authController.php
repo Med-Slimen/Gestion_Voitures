@@ -52,10 +52,12 @@ if(isset($_POST["log_in"])){
             $user_roles[]=$roles["nom"];
         }
         if(in_array("ADMIN",$user_roles)){
+            $_SESSION["admin"]=true;
             header("Location: ../views/admin/adminChose.php");
             exit();
         }
         else{
+            $_SESSION["admin"]=false;
             header("Location: ../views/client/list_voitures.php");
             exit();
         }

@@ -11,15 +11,21 @@ if(isset($_POST["reserver"])){
         $query=$conn->prepare("UPDATE voiture Set disp=0 where id=?");
         $query->execute([$id_voiture]);
         if($query->rowCount()>0){
-            echo"Insersation successful";
+            echo "<script>alert('Voiture reservé avec succeé')</script>";
+            header("Location: ../views/client/list_voitures.php");
+            exit();
         }
         else{
-            echo"error";
+            echo "<script>alert('error')</script>";
+            header("Location: ../views/client/list_voitures.php");
+            exit();
         }
         
     }
     else{
-        echo"error";
+        echo "<script>alert('error')</script>";
+        header("Location: ../views/client/list_voitures.php");
+        exit();
     }
 }
 

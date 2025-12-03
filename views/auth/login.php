@@ -1,3 +1,15 @@
+<?php 
+include_once("../../config/init.php");
+if(isset($_SESSION["username"])){
+    if($_SESSION["admin"]){
+        header("Location: ../admin/dashboard.php");
+    }
+    else{
+        header("Location: ../client/list_voitures.php");
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 

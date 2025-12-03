@@ -17,8 +17,7 @@ if(isset($_POST["Modify"])){
         }
     }
     $query=$conn->prepare("UPDATE voiture SET modele=?,marque=?,annee=?,immat=?,disp=? where id=?");
-    $query->execute([$modele,$marque,$annee,$immat,$disp,$id_voiture]);
-    if($query->rowCount()>0){
+    if($query->execute([$modele,$marque,$annee,$immat,$disp,$id_voiture])){
         header("Location: ../views/admin/dashboard.php");
         exit();
     }

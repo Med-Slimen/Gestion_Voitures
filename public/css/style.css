@@ -174,8 +174,21 @@ h1,h2,h3,h4,h5,h6{
     font-weight: bold;
     font-size: 22px;
 }
-.navbar .box .details .p1,.navbar .box .details .p2 a{
+.adminbutton{
+    margin-bottom: 20px;
+    float: right;
+    cursor: pointer;
+}
+.navbar .box .details p,.navbar .box .details a,.adminbutton a{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight: bold;
     color:#EEEEEE ;
+}
+.navbar .box .details a,.adminbutton a{
+    background-color: #0047b2;
+    padding: 10px;
+    font-size: 19px;
+    border-radius: 8px;
 }
 .main .container .box .text{
     color: #EEEEEE;
@@ -260,7 +273,7 @@ a{text-decoration: none;}
     padding: 10px   ;
 }
 .main .container .reserver_form{
-   position: absolute;
+   position: fixed;
    top: 50%;
    left: 50%;
    transform: translate(-50%, -50%);
@@ -295,6 +308,7 @@ a{text-decoration: none;}
     display: flex;
     margin: 10px auto;
     background-color: #393E46;
+    cursor: pointer;
     color: white; 
 }
 .main .container .reserver_form .details .close{

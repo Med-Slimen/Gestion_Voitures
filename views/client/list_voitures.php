@@ -46,12 +46,8 @@ else{
                 <h1>Car Reservation</h1>
             </div>
             <div class="details">
-                <div class="p1">
-                    <p><?php echo $_SESSION['username']; ?></p>
-                </div>
-                <div class="p2">
-                    <a href="../auth/logout.php">Log out</a>
-                </div>
+                <p><?php echo $_SESSION['username']; ?></p>
+                <a href="../auth/logout.php">Log out</a>
             </div>
         </div>
     </div>
@@ -80,6 +76,15 @@ else{
                         </select>
                         <input type="submit" name="search" value="Search" id="">
                     </form>
+                    <?php 
+                        if(isset($_SESSION["admin"])&& $_SESSION["admin"]){
+                            ?>
+                            <div class="adminbutton">
+                            <a href='../admin/dashboard.php'>Admin Panel</a>
+                            </div>
+                        <?php
+                        }
+                    ?>
                     <table border="3">
                         <tr>
                             <th>Marque</th>
@@ -110,11 +115,16 @@ else{
                                     if($row["disp"]==0){
                                         $disquery=$conn->prepare("SELECT * From reservations where id_voiture=?");
                                         $disquery->execute([$row["id"]]);
-                                        $disres=$disquery->fetch(PDO::FETCH_ASSOC);
-                                        $date_deb=new DATETIME($disres["date_deb"]);
-                                        $date_fin=new DATETIME($disres["date_fin"]);
-                                        $days=$date_deb->diff($date_fin);
-                                        echo "Non ( Available in  ".$days->days+1 ." days )";
+                                        if($disquery->rowCount()>0){
+                                            $disres=$disquery->fetch(PDO::FETCH_ASSOC);
+                                            $date_deb=new DATETIME($disres["date_deb"]);
+                                            $date_fin=new DATETIME($disres["date_fin"]);
+                                            $days=$date_deb->diff($date_fin);
+                                            echo "Non ( Available in  ".$days->days+1 ." days )";
+                                        }
+                                        else{
+                                            echo"Non";
+                                        }
                                     }
                                     else{
                                         echo "Yes";

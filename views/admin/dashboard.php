@@ -3,6 +3,9 @@ include_once("../../config/init.php");
 if(!isset($_SESSION["username"])){
     header("Location: ../auth/login.php");
 }
+else if(!$_SESSION["admin"]){
+    header("Location: ../client/list_voiture.php");
+}
 if(isset($_GET["id"])){
     $idSup=$_GET["id"];
     $query=$conn->prepare("DELETE FROM voiture WHERE id=?");
@@ -94,6 +97,9 @@ else{
                             <input type="submit" name="search" value="Search" id="">
                         </div>
                     </form>
+                    <div class="adminbutton">
+                            <a href='../client/list_voitures.php'>Client Side</a>
+                            </div>
                     <div class="addButton">
                             <button onclick="showAdd()">Add Car</button>
                         </div>

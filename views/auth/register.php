@@ -1,3 +1,4 @@
+<?php include_once("../../config/init.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,6 +16,14 @@
                     <p>Please enter your Details</p>
                     <h1>Sign up for a new account !</h1>
                 </div>
+                <?php if(isset($_SESSION["emailerror"])):?>
+                <div class="alert error">
+                    <?php 
+                        echo $_SESSION["emailerror"]; 
+                        unset($_SESSION["emailerror"]);
+                    ?>
+                </div>
+                <?php endif; ?>
                 <div class="details">
                     <form action="../../controllers/authController.php" method="post">
                         <label for="">Username</label>
@@ -37,5 +46,4 @@
         </div>
     </div>
 </body>
-
 </html>

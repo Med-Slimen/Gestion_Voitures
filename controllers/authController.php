@@ -10,7 +10,9 @@ if(isset($_POST["register"])){
     $query->bindValue(1,$email);
     $query->execute();
     if($query->rowCount()>0){
-        echo"An account already exist with this email";
+        $_SESSION["emailerror"]="Adresse email deja utilisé";
+        header("Location: ../views/auth/register.php");
+        exit();
     }
     else{
         try{
@@ -63,7 +65,9 @@ if(isset($_POST["log_in"])){
         }
     }
     else{
+        $_SESSION["loginerror"]="Invalid credentials";
         header("Location: ../views/auth/login.php");
+
         exit();
     }
 }

@@ -4,28 +4,26 @@ if(!isset($_SESSION["username"])){
     header("Location: ../auth/login.php");
 }
 $query2=$conn->query("SELECT DISTINCT(marque) from voiture");
-if(isset($_GET["search"])){
+if(isset($_GET["search2"])){
+    $dateDeb=$_GET["date_deb"];
+    $dateFin=$_GET["date_fin"];
     $marque=$_GET["marque_list"];
-    $disp=$_GET["disp_list"];
-    if($marque=="all" && $disp=="all" ){
-        $query=$conn->query("SELECT * from voiture");
-    }
-    else if($marque=="all"){
-        $query=$conn->prepare("SELECT * from voiture where disp=?");
-        $query->execute([$disp]);
-    }
-    else if($disp=="all"){
-        $query=$conn->prepare("SELECT * from voiture where marque=?");
-        $query->execute([$marque]);
+    if($marque=="all"){
+        $query=$conn->prepare("SELECT * 
+        from voiture v
+        where v.id not in (Select id_voiture
+                                from reservations
+                                where date_deb<=? and date_fin>=?)");
+        $query->execute([$dateFin,$dateDeb]);
     }
     else{
-        $query=$conn->prepare("SELECT * from voiture where marque=? and disp=?");
-        $query->execute([$marque,$disp]);
+        $query=$conn->prepare("SELECT * 
+        from voiture v
+        where marque=? and v.id not in (Select id_voiture
+                                from reservations
+                                where date_deb<=? and date_fin>=?)");
+        $query->execute([$marque,$dateFin,$dateDeb]);
     }
-    
-}
-else{
-    $query=$conn->query("SELECT * from voiture");
 }
 ?>
 <!DOCTYPE html>
@@ -51,6 +49,14 @@ else{
             </div>
         </div>
     </div>
+    <?php if(isset($_SESSION["reservation_success"])): ?>
+    <div class="alert success">
+        <?php 
+            echo $_SESSION["reservation_success"]; 
+            unset($_SESSION["reservation_success"]);
+        ?>
+    </div>
+    <?php endif; ?>
     <div class="main">
         <div class="container">
             <div class="box">
@@ -58,10 +64,11 @@ else{
                     <h1>Cars List</h1>
                 </div>
                 <div class="details">
-                    <form action="./list_voitures.php" method="get">
+                    <hr>
+                    <form action="./list_voitures.php" onsubmit="return verifDate()" method="get">
                         <select name="marque_list" id="">
                             <option <?php echo isset($marque)&&$marque=="all" ? "selected":"" ?> value="all">All</option>
-                            <?php 
+                            <?php
                             while($row2=$query2->fetch(PDO::FETCH_ASSOC)){
                                 ?>
                                 <option <?php echo isset($marque)&&$marque==$row2["marque"] ? "selected":"" ?> value="<?php echo $row2["marque"] ?>"><?php echo $row2["marque"] ?></option>
@@ -69,12 +76,11 @@ else{
                             }
                             ?>
                         </select>
-                        <select name="disp_list" id="">
-                            <option <?php echo isset($disp)&&$disp=="all" ? "selected":"" ?> value="all">All</option>
-                            <option <?php echo isset($disp)&&$disp=="1" ? "selected":"" ?> value="1">Disponible</option>
-                            <option <?php echo isset($disp)&&$disp=="0" ? "selected":"" ?> value="0">Reservé</option>
-                        </select>
-                        <input type="submit" name="search" value="Search" id="">
+                        <label for="">From</label>
+                        <input type="date" required name="date_deb" value="<?php echo isset($dateDeb) ? $dateDeb : ""; ?>" id="date_deb">
+                        <label for="">To</label>
+                        <input type="date" required name="date_fin" id="date_fin" value="<?php echo isset($dateFin) ? $dateFin : ""; ?>">
+                        <input type="submit" name="search2" value="Search" id="">
                     </form>
                     <?php 
                         if(isset($_SESSION["admin"])&& $_SESSION["admin"]){
@@ -91,19 +97,24 @@ else{
                             <th>Modele</th>
                             <th>Annee</th>
                             <th>Immatriculation</th>
-                            <th>disponibilité</th>
                             <th>Reserver</th>
                         </tr>
                          <?php
-                        if($query->rowCount()==0){
+                         if(!isset($query)){
+                            ?>
+                            <tr>
+                                <td colspan="6">Selectionner une date</td>
+                            </tr>
+                        <?php
+                         }
+                        else if($query->rowCount()==0){
                             ?>
                             <tr>
                                 <td colspan="6">No cars found</td>
                             </tr>
                         <?php
                         }
-                        ?>
-                        <?php
+                        else{
                         while($row=$query->fetch(PDO::FETCH_ASSOC)){
                             ?>
                             <tr>
@@ -111,28 +122,10 @@ else{
                                 <td><?php echo $row["modele"] ;?></td>
                                 <td><?php echo $row["annee"] ;?></td>
                                 <td><?php echo $row["immat"] ;?></td>
-                                <td><?php 
-                                    if($row["disp"]==0){
-                                        $disquery=$conn->prepare("SELECT * From reservations where id_voiture=?");
-                                        $disquery->execute([$row["id"]]);
-                                        if($disquery->rowCount()>0){
-                                            $disres=$disquery->fetch(PDO::FETCH_ASSOC);
-                                            $date_deb=new DATETIME($disres["date_deb"]);
-                                            $date_fin=new DATETIME($disres["date_fin"]);
-                                            $days=$date_deb->diff($date_fin);
-                                            echo "Non ( Available in  ".$days->days+1 ." days )";
-                                        }
-                                        else{
-                                            echo"Non";
-                                        }
-                                    }
-                                    else{
-                                        echo "Yes";
-                                    }
-                                ?></td>
-                                <td><button onclick="showRes('<?php echo $row['marque']?>','<?php echo $row['modele']?>','<?php echo $row['annee']?>','<?php echo $row['immat']?>','<?php echo $row['id'];?>')" class="<?php echo $row["disp"] ? "clickable" : "unclickable"; ?> ;" >Reserver</button></td>
+                                <td><button onclick="showRes('<?php echo $row['marque']?>','<?php echo $row['modele']?>','<?php echo $row['annee']?>','<?php echo $row['immat']?>','<?php echo $row['id'];?>')" class="clickable" >Reserver</button></td>
                             </tr>
                         <?php
+                        }
                         }
                         ?>
                     </table>
@@ -153,9 +146,9 @@ else{
                         <form action="../../controllers/reservationController.php" onsubmit="return verifDate()" method="post">
                             <label for="">From</label>
                             <input type="hidden" name="id_voiture" id="id_voiture">
-                            <input required type="date" name="date_deb" id="date_deb">
+                            <input required readonly type="date" value="<?php echo $dateDeb ?>" name="date_deb" id="date_deb">
                             <label for="">To</label>
-                            <input required type="date" name="date_fin" id="date_fin"><br>
+                            <input required readonly type="date" value="<?php echo $dateFin ?>" name="date_fin" id="date_fin"><br>
                             <input type="submit" name="reserver" value="Reserver" id="">
                         </form>
                     </div>

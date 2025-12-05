@@ -28,6 +28,14 @@ if(isset($_SESSION["username"])){
                     <p>Please enter your Details</p>
                     <h1>Welcome Back</h1>
                 </div>
+                <?php if(isset($_SESSION["loginerror"])):?>
+                <div class="alert error">
+                    <?php 
+                        echo $_SESSION["loginerror"]; 
+                        unset($_SESSION["loginerror"]);
+                    ?>
+                </div>
+                <?php endif; ?>
                 <div class="details">
                     <form action="../../controllers/authController.php" method="post">
                         <label for="">Email</label>

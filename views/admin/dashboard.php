@@ -76,7 +76,7 @@ else{
                 <div class="text">
                     <h1>Cars List</h1>
                 </div>
-                <div class="details">
+                <div id="dashDetails" class="details">
                     <form id="adminForm" action="../admin/dashboard.php" method="get">
                         <div class="search">
                             <select name="marque_list" id="">
@@ -97,11 +97,11 @@ else{
                             <input type="submit" name="search" value="Search" id="">
                         </div>
                     </form>
-                    <div class="adminbutton">
+                    <div id="clientside" class="adminbutton">
                             <a href='../client/list_voitures.php'>Client Side</a>
                             </div>
                     <div class="addButton">
-                            <button onclick="showAdd()">Add Car</button>
+                            <button id="addb" onclick="showAdd()">Add Car</button>
                         </div>
                     <table border="3">
                         <tr>
@@ -132,25 +132,14 @@ else{
                                 <td><?php echo $row["immat"] ;?></td>
                                 <td><?php 
                                     if($row["disp"]==0){
-                                        $disquery=$conn->prepare("SELECT * From reservations where id_voiture=?");
-                                        $disquery->execute([$row["id"]]);
-                                        if($disquery->rowCount()>0){
-                                            $disres=$disquery->fetch(PDO::FETCH_ASSOC);
-                                            $date_deb=new DATETIME($disres["date_deb"]);
-                                            $date_fin=new DATETIME($disres["date_fin"]);
-                                            $days=$date_deb->diff($date_fin);
-                                            echo "Non ( Available in  ".$days->days+1 ." days )";
-                                        }
-                                        else{
                                             echo"Non";
-                                        }
                                     }
                                     else{
                                         echo "Yes";
                                     }
                                 ?></td>
-                                <td><button><a onclick="return confirm('Vous etes sur ?');" href="../admin/dashboard.php?id=<?php echo $row["id"] ?>">Supprimer </a></button></td>
-                                <td><button onclick="showModifiy('<?php echo $row['marque']?>','<?php echo $row['modele']?>','<?php echo $row['annee']?>','<?php echo $row['immat']?>','<?php echo $row['id'];?>','<?php echo $row['disp'];?>')">Modifier</button></td>
+                                <td><button id="supp"><a onclick="return confirm('Vous etes sur ?');" href="../admin/dashboard.php?id=<?php echo $row["id"] ?>">Supprimer </a></button></td>
+                                <td><button id="modd" onclick="showModifiy('<?php echo $row['marque']?>','<?php echo $row['modele']?>','<?php echo $row['annee']?>','<?php echo $row['immat']?>','<?php echo $row['id'];?>','<?php echo $row['disp'];?>')">Modifier</button></td>
                             </tr>
                         <?php
                         }

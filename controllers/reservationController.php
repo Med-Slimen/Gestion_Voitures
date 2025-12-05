@@ -5,28 +5,26 @@ if(isset($_POST["reserver"])){
     $id_voiture=$_POST["id_voiture"];
     $date_deb=$_POST["date_deb"];
     $date_fin=$_POST["date_fin"];
-    $query=$conn->prepare("INSERT INTO reservations(date_deb,date_fin,id_voiture,id_user) Values(?,?,?,?)");
-    $query->execute([$date_deb,$date_fin,$id_voiture,$id_user]);
-    if($query->rowCount()>0){
-        $query=$conn->prepare("UPDATE voiture Set disp=0 where id=?");
-        $query->execute([$id_voiture]);
-        if($query->rowCount()>0){
-            echo "<script>alert('Voiture reservé avec succeé')</script>";
-            header("Location: ../views/client/list_voitures.php");
-            exit();
-        }
-        else{
-            echo "<script>alert('error')</script>";
-            header("Location: ../views/client/list_voitures.php");
-            exit();
-        }
-        
+    try {
+    $conn->beginTransaction();
+
+    $query = $conn->prepare("INSERT INTO reservations (date_deb, date_fin, id_voiture, id_user) VALUES (?, ?, ?, ?)");
+    $query->execute([$date_deb, $date_fin, $id_voiture, $id_user]);
+ 
+    $updateCar = $conn->prepare("UPDATE voiture SET disp = 0 WHERE id = ?");
+    $updateCar->execute([$id_voiture]);
+
+    $conn->commit();
+    $_SESSION["reservation_success"] = "Votre réservation a été effectuée avec succès !";
+    header("Location: ../views/client/list_voitures.php");
+    exit();
     }
-    else{
-        echo "<script>alert('error')</script>";
-        header("Location: ../views/client/list_voitures.php");
-        exit();
+    catch (Exception $e) {
+        $conn->rollback();
+        echo "Erreur: " . $e->getMessage();
     }
+    
+
 }
 
 ?>
